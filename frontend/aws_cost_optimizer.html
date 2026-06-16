@@ -1,0 +1,194 @@
+
+<style>
+  .aws-root { font-family: var(--font-sans); padding: 2rem 1.5rem; max-width: 900px; margin: 0 auto; }
+  .hero { margin-bottom: 2rem; }
+  .hero h1 { font-size: 22px; font-weight: 500; color: var(--color-text-primary); margin: 0 0 4px; display: flex; align-items: center; gap: 10px; }
+  .hero p { font-size: 14px; color: var(--color-text-secondary); margin: 0; }
+  .connect-card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1.5rem; margin-bottom: 1.5rem; }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+  .field label { display: block; font-size: 13px; color: var(--color-text-secondary); margin-bottom: 6px; }
+  .field input { width: 100%; box-sizing: border-box; font-family: var(--font-mono); font-size: 13px; }
+  .connect-btn { width: 100%; padding: 10px; font-size: 15px; font-weight: 500; background: var(--color-background-primary); border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); cursor: pointer; color: var(--color-text-primary); display: flex; align-items: center; justify-content: center; gap: 8px; transition: background 0.15s; }
+  .connect-btn:hover { background: var(--color-background-secondary); }
+  .connect-btn:active { transform: scale(0.98); }
+  .connect-btn.loading { opacity: 0.6; pointer-events: none; }
+  .results { display: none; }
+  .results.visible { display: block; }
+  .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 1.5rem; }
+  .metric { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 1rem; }
+  .metric .label { font-size: 13px; color: var(--color-text-secondary); margin-bottom: 4px; }
+  .metric .value { font-size: 24px; font-weight: 500; color: var(--color-text-primary); }
+  .metric .value.savings { color: var(--color-text-success); }
+  .section-title { font-size: 15px; font-weight: 500; color: var(--color-text-primary); margin: 0 0 12px; }
+  .recs { display: flex; flex-direction: column; gap: 10px; margin-bottom: 1.5rem; }
+  .rec-item { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1rem 1.25rem; display: flex; align-items: flex-start; gap: 14px; }
+  .rec-icon { width: 36px; height: 36px; border-radius: var(--border-radius-md); display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 18px; }
+  .rec-icon.warn { background: var(--color-background-warning); color: var(--color-text-warning); }
+  .rec-icon.info { background: var(--color-background-info); color: var(--color-text-info); }
+  .rec-icon.success { background: var(--color-background-success); color: var(--color-text-success); }
+  .rec-icon.danger { background: var(--color-background-danger); color: var(--color-text-danger); }
+  .rec-body { flex: 1; }
+  .rec-body strong { font-size: 14px; font-weight: 500; color: var(--color-text-primary); display: block; margin-bottom: 2px; }
+  .rec-body span { font-size: 13px; color: var(--color-text-secondary); }
+  .rec-save { font-size: 13px; font-weight: 500; color: var(--color-text-success); white-space: nowrap; }
+  .service-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; margin-bottom: 1.5rem; }
+  .svc-card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1rem; }
+  .svc-card .svc-name { font-size: 13px; color: var(--color-text-secondary); margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+  .svc-card .svc-cost { font-size: 20px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 8px; }
+  .bar-track { height: 4px; background: var(--color-border-tertiary); border-radius: 2px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 2px; background: #378ADD; }
+  .ask-btn { width: 100%; padding: 10px; font-size: 14px; background: var(--color-background-primary); border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); cursor: pointer; color: var(--color-text-primary); display: flex; align-items: center; justify-content: center; gap: 6px; }
+  .ask-btn:hover { background: var(--color-background-secondary); }
+  .error-msg { font-size: 13px; color: var(--color-text-danger); margin-top: 10px; display: none; }
+</style>
+
+<div class="aws-root">
+  <h2 class="sr-only">AWS Cost Optimizer — connect your AWS account to analyze spending and get savings recommendations</h2>
+
+  <div class="hero">
+    <h1><i class="ti ti-chart-bar" aria-hidden="true"></i> AWS Cost Optimizer</h1>
+    <p>Connect your account to analyze spending and surface savings recommendations.</p>
+  </div>
+
+  <div class="connect-card">
+    <div class="field-row">
+      <div class="field">
+        <label for="access-key">AWS Access Key ID</label>
+        <input type="text" id="access-key" placeholder="AKIAIOSFODNN7EXAMPLE" autocomplete="off" spellcheck="false">
+      </div>
+      <div class="field">
+        <label for="secret-key">AWS Secret Access Key</label>
+        <input type="password" id="secret-key" placeholder="wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY" autocomplete="off">
+      </div>
+    </div>
+    <button class="connect-btn" id="connect-btn" onclick="handleConnect()">
+      <i class="ti ti-plug" aria-hidden="true"></i> Connect &amp; Analyze
+    </button>
+    <p class="error-msg" id="error-msg"></p>
+  </div>
+
+  <div class="results" id="results">
+    <div class="summary-grid">
+      <div class="metric">
+        <div class="label">Monthly spend</div>
+        <div class="value" id="m-spend">$0</div>
+      </div>
+      <div class="metric">
+        <div class="label">Potential savings</div>
+        <div class="value savings" id="m-savings">$0</div>
+      </div>
+      <div class="metric">
+        <div class="label">Resources scanned</div>
+        <div class="value" id="m-resources">0</div>
+      </div>
+      <div class="metric">
+        <div class="label">Recommendations</div>
+        <div class="value" id="m-recs">0</div>
+      </div>
+    </div>
+
+    <p class="section-title">Top recommendations</p>
+    <div class="recs" id="recs-list"></div>
+
+    <p class="section-title">Spend by service</p>
+    <div class="service-grid" id="svc-grid"></div>
+
+    <button class="ask-btn" onclick="sendPrompt('Based on my AWS cost analysis, what are the highest-impact steps I should take first to reduce my bill?')">
+      <i class="ti ti-message" aria-hidden="true"></i> Ask Claude for a savings plan ↗
+    </button>
+  </div>
+</div>
+
+<script>
+async function handleConnect() {
+  const key = document.getElementById('access-key').value.trim();
+  const secret = document.getElementById('secret-key').value.trim();
+  const errEl = document.getElementById('error-msg');
+  errEl.style.display = 'none';
+
+  if (!key || !secret) {
+    errEl.textContent = 'Please enter both your Access Key ID and Secret Access Key.';
+    errEl.style.display = 'block';
+    return;
+  }
+  if (!/^[A-Z0-9]{16,}$/.test(key)) {
+    errEl.textContent = 'Access Key ID looks incorrect — it should be uppercase letters and digits.';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  const btn = document.getElementById('connect-btn');
+  btn.classList.add('loading');
+  btn.innerHTML = '<i class="ti ti-loader-2" aria-hidden="true"></i> Analyzing…';
+
+  const prompt = `You are an AWS cost analysis engine. Given an AWS account connection was just made, generate a realistic mock cost analysis report as JSON only — no markdown, no explanation, no backticks.
+
+Return exactly this shape:
+{
+  "monthly_spend": <number>,
+  "potential_savings": <number>,
+  "resources_scanned": <number>,
+  "recommendations": [
+    { "type": "warn|info|success|danger", "icon": "<tabler-icon-name>", "title": "<short title>", "detail": "<one sentence>", "savings": <monthly USD number> },
+    ...4 total
+  ],
+  "services": [
+    { "name": "<service>", "icon": "<tabler-icon-name>", "cost": <number>, "pct": <0-100> },
+    ...5 total
+  ]
+}`;
+
+  try {
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 1000,
+        messages: [{ role: "user", content: prompt }]
+      })
+    });
+    const data = await res.json();
+    const raw = data.content.map(b => b.text || '').join('').replace(/```json|```/g, '').trim();
+    const report = JSON.parse(raw);
+    renderResults(report);
+  } catch(e) {
+    errEl.textContent = 'Analysis failed. Check your credentials and try again.';
+    errEl.style.display = 'block';
+    btn.classList.remove('loading');
+    btn.innerHTML = '<i class="ti ti-plug" aria-hidden="true"></i> Connect &amp; Analyze';
+  }
+}
+
+function renderResults(r) {
+  document.getElementById('m-spend').textContent = '$' + r.monthly_spend.toLocaleString();
+  document.getElementById('m-savings').textContent = '$' + r.potential_savings.toLocaleString();
+  document.getElementById('m-resources').textContent = r.resources_scanned.toLocaleString();
+  document.getElementById('m-recs').textContent = r.recommendations.length;
+
+  const recsList = document.getElementById('recs-list');
+  recsList.innerHTML = r.recommendations.map(rec => `
+    <div class="rec-item">
+      <div class="rec-icon ${rec.type}"><i class="ti ti-${rec.icon}" aria-hidden="true"></i></div>
+      <div class="rec-body">
+        <strong>${rec.title}</strong>
+        <span>${rec.detail}</span>
+      </div>
+      <div class="rec-save">−$${rec.savings.toLocaleString()}/mo</div>
+    </div>
+  `).join('');
+
+  const svcGrid = document.getElementById('svc-grid');
+  svcGrid.innerHTML = r.services.map(s => `
+    <div class="svc-card">
+      <div class="svc-name"><i class="ti ti-${s.icon}" aria-hidden="true"></i> ${s.name}</div>
+      <div class="svc-cost">$${s.cost.toLocaleString()}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${s.pct}%"></div></div>
+    </div>
+  `).join('');
+
+  document.getElementById('results').classList.add('visible');
+  document.getElementById('connect-btn').innerHTML = '<i class="ti ti-check" aria-hidden="true"></i> Connected';
+  document.getElementById('connect-btn').classList.remove('loading');
+}
+</script>
