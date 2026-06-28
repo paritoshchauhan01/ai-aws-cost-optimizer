@@ -1,10 +1,10 @@
-# ☁️ AWS Cost Optimizer — Powered by Gemini AI
+# ☁️ AWS Cost Optimizer — Powered by Groq AI
 
-A full-stack web application that connects to your AWS account, scans your infrastructure, and uses **Google Gemini AI** to deliver actionable cost-saving recommendations.
+A full-stack web application that connects to your AWS account, scans your infrastructure, and uses **Groq AI** to deliver actionable cost-saving recommendations.
 
 ![Stack](https://img.shields.io/badge/Frontend-React%20%2B%20Vite-61DAFB?style=flat-square&logo=react)
 ![Stack](https://img.shields.io/badge/Backend-FastAPI-009688?style=flat-square&logo=fastapi)
-![Stack](https://img.shields.io/badge/AI-Gemini%202.0%20Flash-4285F4?style=flat-square&logo=google)
+![Stack](https://img.shields.io/badge/AI-Groq-F55036?style=flat-square&logo=groq)
 ![Stack](https://img.shields.io/badge/Cloud-AWS-FF9900?style=flat-square&logo=amazonaws)
 
 ---
@@ -14,7 +14,7 @@ A full-stack web application that connects to your AWS account, scans your infra
 - 🔗 **AWS Account Connection** — securely connect using Access Key + Secret Key
 - 🔍 **Infrastructure Scanner** — scans EC2, EBS, RDS, and S3 resources
 - 💰 **Cost Analysis** — fetches real monthly spend via AWS Cost Explorer
-- 🤖 **Gemini AI Recommendations** — deep analysis with estimated savings per issue
+- 🤖 **Groq AI Recommendations** — ultra-fast analysis with estimated savings per issue
 - 💬 **AI Chat Assistant** — ask anything about your AWS costs in natural language
 - 📊 **Animated Dashboard** — live charts, stat cards, and recommendation list
 - 🐳 **Docker Support** — run the full stack with one command
@@ -27,7 +27,7 @@ A full-stack web application that connects to your AWS account, scans your infra
 |----------|-----------------------------------|
 | Frontend | React 19, Vite, Recharts          |
 | Backend  | FastAPI, Python 3.12, Uvicorn     |
-| AI       | Google Gemini 2.0 Flash (REST API)|
+| AI       | Groq API (LLaMA 3)                |
 | Cloud    | AWS boto3 (EC2, EBS, RDS, S3, CE) |
 | Infra    | Docker, Docker Compose, Terraform |
 
@@ -42,7 +42,7 @@ aws-cost-optimizer/
 │   ├── requirements.txt
 │   ├── .env.example
 │   └── services/
-│       ├── ai_service.py        # Gemini AI integration
+│       ├── ai_service.py        # Groq AI integration
 │       ├── aws_service.py       # AWS boto3 calls
 │       └── optimizer.py         # Cost rule engine
 ├── frontend/
@@ -66,7 +66,7 @@ aws-cost-optimizer/
 ### Prerequisites
 - Python 3.10+
 - Node.js 18+
-- Gemini API key → [aistudio.google.com/apikey](https://aistudio.google.com/apikey)
+- Groq API key → [console.groq.com/keys](https://console.groq.com/keys)
 - AWS IAM user with read-only permissions
 
 ### 1. Clone the repo
@@ -80,7 +80,7 @@ cd aws-cost-optimizer
 cd backend
 pip install -r requirements.txt
 cp .env.example .env
-# Edit .env and add your Gemini API key
+# Edit .env and add your Groq API key
 ```
 
 Start backend:
@@ -102,7 +102,7 @@ Open **http://localhost:5173**
 ## 🐳 Docker (run everything at once)
 
 ```bash
-export GEMINI_API_KEY=your_key_here   # Windows: set GEMINI_API_KEY=your_key_here
+export GROQ_API_KEY=your_key_here   # Windows: set GROQ_API_KEY=your_key_here
 docker-compose up --build
 ```
 
@@ -144,7 +144,7 @@ Create a read-only IAM user with this policy:
 | GET    | /health    | Health check                       |
 | POST   | /connect   | Verify AWS credentials             |
 | POST   | /scan      | Scan all AWS resources             |
-| POST   | /analyze   | Gemini AI cost analysis            |
+| POST   | /analyze   | Groq AI cost analysis              |
 | POST   | /chat      | Multi-turn AI chat                 |
 
 ---
@@ -153,7 +153,7 @@ Create a read-only IAM user with this policy:
 
 ```env
 # backend/.env
-GEMINI_API_KEY=your_gemini_api_key_here
+GROQ_API_KEY=your_groq_api_key_here
 ```
 
 ---
@@ -164,7 +164,7 @@ GEMINI_API_KEY=your_gemini_api_key_here
 |------|-------------|
 | **Connect** | Enter AWS credentials to get started |
 | **Dashboard** | View costs, resources, charts, and AI recommendations |
-| **AI Chat** | Ask Gemini anything about your AWS spending |
+| **AI Chat** | Ask Groq AI anything about your AWS spending |
 
 ---
 
@@ -185,7 +185,7 @@ MIT License — free to use, modify, and distribute.
 ## 🙌 Built With
 
 - [FastAPI](https://fastapi.tiangolo.com/)
-- [Google Gemini API](https://ai.google.dev/)
+- [Groq API](https://console.groq.com/)
 - [React](https://react.dev/)
 - [Recharts](https://recharts.org/)
 - [boto3](https://boto3.amazonaws.com/v1/documentation/api/latest/index.html)
